@@ -6,122 +6,46 @@
 <title>사진 투표</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
-:root {
-  --ink: #24352f;
-  --sub: #596960;
-  --line: #dce3de;
-  --bg: #f7f8f4;
-  --accent: #236b57;
-  --accent-d: #19513f;
-}
-
-main {
-  max-width: 1040px;
-  padding: 48px 20px 64px;
-}
-
-.eyebrow {
-  margin: 0 0 12px;
-  color: var(--accent);
-  font-size: .85rem;
-  font-weight: 700;
-}
-
-h1 {
-  font-size: clamp(1.6rem, 4vw, 2.3rem);
-  line-height: 1.4;
-  letter-spacing: -.04em;
-  margin-bottom: 14px;
-}
-
-p.lead {
-  line-height: 1.8;
-  margin-bottom: 30px;
-}
-
-.grid { gap: 22px; }
-
-.photo {
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgb(36 53 47 / 5%);
-  transition: transform .18s, box-shadow .18s, border-color .18s;
-}
-
-.photo .cap {
-  padding: 16px;
-  font-weight: 700;
-}
-
-@media (hover: hover) {
-  .photo:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgb(36 53 47 / 10%);
-  }
-}
-
-#v-form { max-width: 720px; margin: auto; }
-#v-form > h1 { margin-bottom: 24px; }
-
-.picked {
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 24px;
-}
-
-form {
-  border-radius: 18px;
-  padding: 28px;
-  box-shadow: 0 8px 28px rgb(36 53 47 / 5%);
-}
-
-label.f { margin-bottom: 8px; }
-
-input[type=text], input[type=tel], textarea {
-  border-width: 1px;
-  border-radius: 10px;
-  padding: 14px;
-}
-
-input:focus, textarea:focus {
-  box-shadow: 0 0 0 3px rgb(35 107 87 / 15%);
-}
-
-.consent { padding: 16px; line-height: 1.8; }
-.check { align-items: flex-start; }
-.check input { flex-shrink: 0; accent-color: var(--accent); }
-
-button.btn { border-radius: 12px; min-height: 52px; }
-.row .primary { flex: 1; }
-button.ghost { border-color: var(--line); }
-
-.done {
-  max-width: 720px;
-  margin: auto;
-  padding: 48px 24px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-}
-
-@media (max-width: 640px) {
-  main { padding: 30px 18px 48px; }
-  .grid { gap: 14px; }
-  .photo .cap { padding: 12px; }
-  form { padding: 20px; }
-
-  .picked { flex-direction: row; align-items: center; }
-  .picked .frame { width: 88px; }
-  .picked > div:last-child { flex: 1; min-width: 0; }
-
-  .row { flex-direction: column; }
-  .row button { width: 100%; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .photo { transition: none; }
-  .photo:hover { transform: none; }
-}
+  :root { --ink:#1b2a3a; --sub:#55657a; --line:#d5dde5; --bg:#f3f6f8; --accent:#1f6f78; --accent-d:#17555c; --err:#b3261e; }
+  * { box-sizing:border-box; }
+  html { font-size:18px; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Noto Sans KR",system-ui,sans-serif; line-height:1.6; }
+  main { max-width:960px; margin:0 auto; padding:28px 18px 56px; }
+  h1 { font-size:1.7rem; line-height:1.3; margin:0 0 6px; }
+  p.lead { margin:0 0 22px; color:var(--sub); }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .photo { all:unset; cursor:pointer; display:block; background:#fff; border:2px solid var(--line); border-radius:10px; overflow:hidden; }
+  .photo:hover { border-color:var(--accent); }
+  .photo:focus-visible { outline:4px solid var(--accent); outline-offset:2px; }
+  .photo .frame { aspect-ratio:4/3; background:#e4eaef; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--sub); }
+  .photo img { width:100%; height:100%; object-fit:cover; display:block; }
+  .photo .cap { padding:10px 12px; font-weight:500; }
+  .hidden { display:none !important; }
+  .picked { display:flex; gap:16px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:22px; }
+  .picked .frame { width:140px; flex:none; aspect-ratio:4/3; border-radius:6px; overflow:hidden; background:#e4eaef; display:flex; align-items:center; justify-content:center; }
+  .picked img { width:100%; height:100%; object-fit:cover; }
+  .picked b { display:block; }
+  form { background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px; }
+  label.f { display:block; font-weight:700; margin:0 0 4px; }
+  .field { margin-bottom:18px; }
+  input[type=text], input[type=tel], textarea { width:100%; font:inherit; padding:12px; border:2px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); }
+  input:focus, textarea:focus { outline:none; border-color:var(--accent); }
+  textarea { min-height:130px; resize:vertical; }
+  .hint { font-size:.85rem; color:var(--sub); margin:2px 0 0; }
+  .consent { background:var(--bg); border-radius:8px; padding:12px; font-size:.9rem; color:var(--sub); margin-bottom:10px; }
+  .check { display:flex; gap:10px; align-items:center; font-weight:500; margin-bottom:18px; }
+  .check input { width:22px; height:22px; }
+  .err { color:var(--err); font-size:.9rem; min-height:1.4em; margin:0 0 8px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  button.btn { font:inherit; font-weight:700; padding:14px 22px; border-radius:8px; border:2px solid var(--accent); cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; }
+  button.primary:hover { background:var(--accent-d); }
+  button.primary:disabled { opacity:.6; cursor:default; }
+  button.ghost { background:#fff; color:var(--accent); }
+  button:focus-visible { outline:4px solid var(--ink); outline-offset:2px; }
+  .done { text-align:center; padding:40px 10px; }
+  .done h1 { margin-bottom:10px; }
+  @media (max-width:640px) { html { font-size:17px; } .grid { grid-template-columns:repeat(2,1fr); } .picked { flex-direction:column; align-items:flex-start; } .picked .frame { width:100%; } }
 </style>
 </head>
 <body>
@@ -181,12 +105,12 @@ button.ghost { border-color: var(--line); }
 /* ====== 여기만 수정하세요 ====== */
 const SCRIPT_URL = "여기에_Apps_Script_웹앱_URL_붙여넣기";
 const PHOTOS = [
-  { src: "photos/1.jpg", title: "사진 1 변경" },
-  { src: "photos/2.jpg", title: "사진 2 변경" },
-  { src: "photos/3.jpg", title: "사진 3 변경" },
-  { src: "photos/4.jpg", title: "사진 4 변경" },
-  { src: "photos/5.jpg", title: "사진 5 변경" },
-  { src: "photos/6.jpg", title: "사진 6 변경" }
+  { src: "photos/1.jpg", title: "사진 1" },
+  { src: "photos/2.jpg", title: "사진 2" },
+  { src: "photos/3.jpg", title: "사진 3" },
+  { src: "photos/4.jpg", title: "사진 4" },
+  { src: "photos/5.jpg", title: "사진 5" },
+  { src: "photos/6.jpg", title: "사진 6" }
 ];
 /* =============================== */
 
