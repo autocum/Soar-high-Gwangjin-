@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>사진 투표</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  :root { --ink:#1b2a3a; --sub:#55657a; --line:#d5dde5; --bg:#f3f6f8; --accent:#1f6f78; --accent-d:#17555c; --err:#b3261e; }
+  * { box-sizing:border-box; }
+  html { font-size:18px; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:"Noto Sans KR",system-ui,sans-serif; line-height:1.6; }
+  main { max-width:960px; margin:0 auto; padding:28px 18px 56px; }
+  h1 { font-size:1.7rem; line-height:1.3; margin:0 0 6px; }
+  p.lead { margin:0 0 22px; color:var(--sub); }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .photo { all:unset; cursor:pointer; display:block; background:#fff; border:2px solid var(--line); border-radius:10px; overflow:hidden; }
+  .photo:hover { border-color:var(--accent); }
+  .photo:focus-visible { outline:4px solid var(--accent); outline-offset:2px; }
+  .photo .frame { aspect-ratio:4/3; background:#e4eaef; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--sub); }
+  .photo img { width:100%; height:100%; object-fit:cover; display:block; }
+  .photo .cap { padding:10px 12px; font-weight:500; }
+  .hidden { display:none !important; }
+  .picked { display:flex; gap:16px; align-items:center; background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:22px; }
+  .picked .frame { width:140px; flex:none; aspect-ratio:4/3; border-radius:6px; overflow:hidden; background:#e4eaef; display:flex; align-items:center; justify-content:center; }
+  .picked img { width:100%; height:100%; object-fit:cover; }
+  .picked b { display:block; }
+  form { background:#fff; border:1px solid var(--line); border-radius:10px; padding:20px; }
+  label.f { display:block; font-weight:700; margin:0 0 4px; }
+  .field { margin-bottom:18px; }
+  input[type=text], input[type=tel], textarea { width:100%; font:inherit; padding:12px; border:2px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); }
+  input:focus, textarea:focus { outline:none; border-color:var(--accent); }
+  textarea { min-height:130px; resize:vertical; }
+  .hint { font-size:.85rem; color:var(--sub); margin:2px 0 0; }
+  .consent { background:var(--bg); border-radius:8px; padding:12px; font-size:.9rem; color:var(--sub); margin-bottom:10px; }
+  .check { display:flex; gap:10px; align-items:center; font-weight:500; margin-bottom:18px; }
+  .check input { width:22px; height:22px; }
+  .err { color:var(--err); font-size:.9rem; min-height:1.4em; margin:0 0 8px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  button.btn { font:inherit; font-weight:700; padding:14px 22px; border-radius:8px; border:2px solid var(--accent); cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; }
+  button.primary:hover { background:var(--accent-d); }
+  button.primary:disabled { opacity:.6; cursor:default; }
+  button.ghost { background:#fff; color:var(--accent); }
+  button:focus-visible { outline:4px solid var(--ink); outline-offset:2px; }
+  .done { text-align:center; padding:40px 10px; }
+  .done h1 { margin-bottom:10px; }
+  @media (max-width:640px) { html { font-size:17px; } .grid { grid-template-columns:repeat(2,1fr); } .picked { flex-direction:column; align-items:flex-start; } .picked .frame { width:100%; } }
+</style>
+</head>
+<body>
+<main>
+
+  <!-- 1. 사진 선택 -->
+  <section id="v-pick">
+    <h1>마음에 드는 사진을 눌러 주세요</h1>
+    <p class="lead">가장 마음에 드는 사진 한 장을 선택하면 간단한 설문으로 넘어갑니다.</p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- 2. 설문 -->
+  <section id="v-form" class="hidden">
+    <h1>선택하신 사진에 대해 알려 주세요</h1>
+    <div class="picked">
+      <div class="frame" id="pickedFrame"></div>
+      <div><b id="pickedTitle"></b><span class="hint">다른 사진을 고르려면 아래 '다시 고르기'를 눌러 주세요.</span></div>
+    </div>
+    <form id="form" novalidate>
+      <div class="field">
+        <label class="f" for="name">성명</label>
+        <input type="text" id="name" autocomplete="name" maxlength="30">
+      </div>
+      <div class="field">
+        <label class="f" for="phone">연락처</label>
+        <input type="tel" id="phone" inputmode="numeric" autocomplete="tel" maxlength="13" placeholder="010-0000-0000">
+      </div>
+      <div class="field">
+        <label class="f" for="comment">사진에 대한 소감</label>
+        <textarea id="comment" maxlength="1000"></textarea>
+      </div>
+      <div class="consent">
+        <b>개인정보 수집·이용 안내</b><br>
+        수집 항목: 성명, 연락처 / 수집 목적: 사진 선호도 조사 결과 정리 및 참여 확인 / 보유 기간: 조사 종료 후 OOO까지<br>
+        동의하지 않으실 수 있으며, 동의하지 않으면 참여가 제한됩니다.
+      </div>
+      <label class="check"><input type="checkbox" id="agree"> 위 내용에 동의합니다.</label>
+      <p class="err" id="err" role="alert"></p>
+      <div class="row">
+        <button type="submit" class="btn primary" id="submit">제출하기</button>
+        <button type="button" class="btn ghost" id="back">다시 고르기</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- 3. 완료 -->
+  <section id="v-done" class="hidden done">
+    <h1>참여해 주셔서 감사합니다</h1>
+    <p class="lead">응답이 정상적으로 접수되었습니다.</p>
+    <button class="btn primary" id="again">처음으로</button>
+  </section>
+
+</main>
+
+<script>
+/* ====== 여기만 수정하세요 ====== */
+const SCRIPT_URL = "여기에_Apps_Script_웹앱_URL_붙여넣기";
+const PHOTOS = [
+  { src: "photos/1.jpg", title: "사진 1" },
+  { src: "photos/2.jpg", title: "사진 2" },
+  { src: "photos/3.jpg", title: "사진 3" },
+  { src: "photos/4.jpg", title: "사진 4" },
+  { src: "photos/5.jpg", title: "사진 5" },
+  { src: "photos/6.jpg", title: "사진 6" }
+];
+/* =============================== */
+
+const $ = id => document.getElementById(id);
+let selected = null;
+
+function thumb(p, i) {
+  const img = new Image();
+  img.alt = p.title;
+  img.src = p.src;
+  img.onerror = () => { img.replaceWith(document.createTextNode(i + 1)); };
+  return img;
+}
+
+PHOTOS.forEach((p, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "photo";
+  const f = document.createElement("div"); f.className = "frame"; f.appendChild(thumb(p, i));
+  const c = document.createElement("div"); c.className = "cap"; c.textContent = p.title;
+  b.append(f, c);
+  b.onclick = () => choose(i);
+  $("grid").appendChild(b);
+});
+
+function show(id) {
+  ["v-pick", "v-form", "v-done"].forEach(v => $(v).classList.toggle("hidden", v !== id));
+  window.scrollTo(0, 0);
+}
+
+function choose(i) {
+  selected = i;
+  $("pickedFrame").replaceChildren(thumb(PHOTOS[i], i));
+  $("pickedTitle").textContent = PHOTOS[i].title;
+  $("err").textContent = "";
+  show("v-form");
+}
+
+$("back").onclick = () => show("v-pick");
+$("again").onclick = () => { $("form").reset(); selected = null; show("v-pick"); };
+
+$("phone").addEventListener("input", e => {
+  const d = e.target.value.replace(/\D/g, "").slice(0, 11);
+  e.target.value = d.length > 7 ? d.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3")
+                  : d.length > 3 ? d.replace(/(\d{3})(\d+)/, "$1-$2") : d;
+});
+
+$("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("name").value.trim(), phone = $("phone").value.trim(), comment = $("comment").value.trim();
+  if (!name) return fail("성명을 입력해 주세요.");
+  if (!/^01\d-\d{3,4}-\d{4}$/.test(phone)) return fail("연락처를 010-0000-0000 형식으로 입력해 주세요.");
+  if (!comment) return fail("사진에 대한 소감을 적어 주세요.");
+  if (!$("agree").checked) return fail("개인정보 수집·이용에 동의해 주세요.");
+  fail("");
+  const btn = $("submit"); btn.disabled = true; btn.textContent = "제출 중...";
+  try {
+    await fetch(SCRIPT_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ photo: PHOTOS[selected].title, name, phone, comment })
+    });
+    $("form").reset();
+    show("v-done");
+  } catch (_) {
+    fail("전송하지 못했습니다. 인터넷 연결을 확인한 뒤 다시 눌러 주세요.");
+  } finally {
+    btn.disabled = false; btn.textContent = "제출하기";
+  }
+});
+
+function fail(msg) { $("err").textContent = msg; return false; }
+</script>
+</body>
+</html>
