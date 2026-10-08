@@ -191,7 +191,7 @@ main { max-width:1100px; margin:0 auto; }
       사진에 대한 소감을 작성해 주신 분 중 우수 소감 작성자에게 선물을 드립니다.
     </div>
 
-    <div class="consent">
+  <div class="consent" id="consentBox">
       <b>개인정보 수집·이용 안내</b><br>
       수집 항목: 성명, 연락처<br>
       수집 목적: 참여 확인 및 이벤트 당첨 안내<br>
@@ -272,13 +272,20 @@ function choose(i) {
 
 $("back").onclick = () => show("v-pick");
 $("again").onclick = () => { $("form").reset(); selected = null; show("v-pick"); };
-
 $("phone").addEventListener("input", e => {
   const d = e.target.value.replace(/\D/g, "").slice(0, 11);
-  e.target.value = d.length > 7 ? d.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3")
-                  : d.length > 3 ? d.replace(/(\d{3})(\d+)/, "$1-$2") : d;
-});
+  e.target.value =
+    d.length > 7
+      ? d.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3")
+      : d.length > 3
+        ? d.replace(/(\d{3})(\d+)/, "$1-$2")
+        : d;
 
+  /* 휴대폰 번호 입력이 완료되면 개인정보 동의 부분으로 이동 */
+  if (/^01\d-\d{3,4}-\d{4}$/.test(e.target.value)) {
+    moveTo($("consentBox"));
+  }
+});
 $("form").addEventListener("submit", async e => {
   e.preventDefault();
   const name = $("name").value.trim(), phone = $("phone").value.trim(), comment = $("comment").value.trim();
@@ -301,7 +308,39 @@ $("form").addEventListener("submit", async e => {
   } finally {
   btn.disabled = false; btn.textContent = "투표 완료하기";  }
 });
+/* ===== 입력 완료 시 다음 항목으로 자동 스크롤 ===== */
 
+function moveTo(el) {
+  setTimeout(() => {
+    el.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }, 250);
+}
+
+/* 소감 작성 후 → 성명 */
+$("comment").addEventListener("blur", () => {
+  if ($("comment").value.trim()) {
+    moveTo($("name"));
+  }
+});
+
+/* 성명 작성 후 → 연락처 */
+$("name").addEventListener("blur", () => {
+  if ($("name").value.trim()) {
+    moveTo($("phone"));
+  }
+});
+
+/* 개인정보 동의 후 → 투표 완료 버튼 */
+$("agree").addEventListener("change", () => {
+  if ($("agree").checked) {
+    moveTo($("submit"));
+  }
+});
+  
+  
 function fail(msg) { $("err").textContent = msg; return false; }
 </script>
 </body>
