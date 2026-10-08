@@ -89,6 +89,46 @@ main { max-width:1100px; margin:0 auto; }
 .photo .frame { overflow:hidden; }
 .photo img { min-width:0; min-height:0; }
 @media (max-width:640px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; } }
+  /* 선택한 사진 영역 */
+.picked-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.back-top {
+  margin-left: auto;
+  flex: none;
+  padding: 10px 16px;
+  white-space: nowrap;
+}
+
+/* 투표 완료 버튼 */
+.submit-bar {
+  position: sticky;
+  bottom: 10px;
+  margin-top: 16px;
+  padding: 8px;
+  background: rgba(255,255,255,.96);
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgb(36 53 47 / 12%);
+  z-index: 10;
+}
+
+.submit-bar .primary {
+  width: 100%;
+  min-height: 58px;
+  font-size: 1.05rem;
+}
+
+@media (max-width:640px) {
+  .picked {
+    flex-wrap: wrap;
+  }
+
+  .back-top {
+    margin-left: auto;
+  }
+}
 </style>
 </head>
 <body>
@@ -105,13 +145,18 @@ main { max-width:1100px; margin:0 auto; }
 <section id="v-form" class="hidden">
   <h1>마음에 든 이유를 들려주세요</h1>
 
-  <div class="picked">
-    <div class="frame" id="pickedFrame"></div>
-    <div>
-      <b id="pickedTitle"></b>
-      <span class="hint">다른 사진을 선택하려면 아래 '다시 고르기'를 눌러 주세요.</span>
-    </div>
+<div class="picked">
+  <div class="frame" id="pickedFrame"></div>
+
+  <div class="picked-info">
+    <b id="pickedTitle"></b>
+    <span class="hint">선택한 사진을 확인해 주세요.</span>
   </div>
+
+  <button type="button" class="btn ghost back-top" id="back">
+    다시 고르기
+  </button>
+</div>
 
   <form id="form" novalidate>
 
@@ -161,10 +206,11 @@ main { max-width:1100px; margin:0 auto; }
 
     <p class="err" id="err" role="alert"></p>
 
-    <div class="row">
-      <button type="submit" class="btn primary" id="submit">투표 완료하기</button>
-      <button type="button" class="btn ghost" id="back">다시 고르기</button>
-    </div>
+<div class="submit-bar">
+  <button type="submit" class="btn primary" id="submit">
+    투표 완료하기
+  </button>
+</div>
   </form>
 </section>
 
